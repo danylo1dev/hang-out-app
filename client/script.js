@@ -10,7 +10,7 @@ const messaging = (msgsArea, name, msg) => {
 
 const displayConnectionStatus = (nickName) => {
     const connectionStatus = document.getElementById('connectionStatus')
-    connectionStatus.innerText = `Hello ${nickName} you connected Successfully`
+    connectionStatus.innerText = `Hello ${nickName} you connected Successfully ✅`
 }
 
 socket.on('connect', () => {
@@ -142,4 +142,11 @@ socket.on('connect', () => {
         alert(`${userNickName} Has left the chat`)
     })
 })
+
+const createGrpBtn = document.getElementById('createGrp')
+createGrpBtn.onclick = () => {
+    const grpName = prompt('What is the group name?')
+    const url = `/privGroup/${grpName}`
+    window.open(url, '_blank')
+}
 
