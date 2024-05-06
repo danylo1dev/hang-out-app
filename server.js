@@ -8,23 +8,42 @@ const port = 3000
 
 app.use(express.static('client'))
 
+let connectedUsers = {}
+
 io.on('connection', socket => {
-    console.log(`A user connected with id ${socket.id}`)
 
     socket.on('new user', nickName => {
         socket.nickName = nickName
+        connectedUsers[socket.id] = socket.nickName
         console.log(`${nickName} has connected, his id is: ${socket.id}`)
+        console.log('Connected Users',connectedUsers)
         socket.broadcast.emit('new user', nickName)
+        io.emit('usersList', connectedUsers)
     })
 
     socket.on('group message', (nickName ,msg) => {
         console.log(msg)
-        io.emit('group message', nickName, msg)
+        socket.broadcast.emit('group message', nickName, msg)
+    })
+
+    socket.on('userIsTyping', (nickName) => {
+        socket.broadcast.emit('userIsTyping', nickName)
+    })
+
+    socket.on('userIsNotTyping', () => {
+        socket.broadcast.emit('userIsNotTyping')
+    })
+
+    socket.on('sendPrivateMsg', (senderID, recID, senderName, msg) => {
+        socket.to(recID).emit('recPrivateMsg', senderID, senderName, msg)
     })
 
     socket.on('disconnect', () => {
-        console.log(`User with id ${socket.id} Disconnected`)
+        console.log(`${socket.nickName} has disconnected, his id is: ${socket.id}`)
         socket.broadcast.emit('user left', socket.nickName)
+        delete connectedUsers[socket.id]
+        io.emit('usersList', connectedUsers)
+        console.log('Connected Users',connectedUsers)
     })
 })
 
