@@ -138,7 +138,7 @@ socket.on('connect', () => {
         typing.innerText = ''
     })
     
-    socket.on('user left', userNickName => {
+    socket.on('userLeft', userNickName => {
         alert(`${userNickName} Has left the chat`)
     })
 })
